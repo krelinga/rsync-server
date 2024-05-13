@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option go_package = "github.com/krelinga/rsync-server/pb";
+
+message CopyRequest {
+}
+
+message CopyReply {
+}
+
+service Rsync {
+    rpc Copy(CopyRequest) returns (CopyReply) {}
+}
