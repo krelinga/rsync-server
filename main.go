@@ -2,7 +2,6 @@ package main
 
 import (
     "context"
-    "errors"
     "log"
     "net"
 
@@ -15,7 +14,7 @@ type RsyncServer struct {
 }
 
 func (rs *RsyncServer) Copy(ctx context.Context, req *pb.CopyRequest) (*pb.CopyReply, error) {
-    return nil, errors.New("Not implemented.")
+    return copyImpl(ctx, req)
 }
 
 func MainOrError() error {
