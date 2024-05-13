@@ -77,6 +77,11 @@ func (tc testContainer) Run(t *testing.T) {
 }
 
 func testCopy(t *testing.T, c pb.RsyncClient) {
+    req := &pb.CopyRequest{}
+    _, err := c.Copy(context.Background(), req)
+    if err == nil {
+        t.Error("Expected an error.")
+    }
 }
 
 func TestDocker(t *testing.T) {
