@@ -11,6 +11,7 @@ import (
 func copyImpl(ctx context.Context, req *pb.CopyRequest) (*pb.CopyReply, error) {
     args := []string{
         "-a",
+        "--info=progress2",
         "-r",
         req.InPath,
         req.OutSuperPath,
