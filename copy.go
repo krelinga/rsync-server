@@ -2,11 +2,24 @@ package main
 
 import (
     "context"
-    "errors"
+    "log"
+    "os/exec"
 
     "github.com/krelinga/rsync-server/pb"
 )
 
 func copyImpl(ctx context.Context, req *pb.CopyRequest) (*pb.CopyReply, error) {
-    return nil, errors.New("Not implemented.")
+    args := []string{
+        "-a",
+        "-r",
+        req.InPath,
+        req.OutSuperPath,
+    }
+    cmd := exec.CommandContext(ctx, "rsync", args...)
+    cmd.Stdout = log.Default().Writer()
+    cmd.Stderr = log.Default().Writer()
+    if err := cmd.Run(); err != nil {
+        return nil, err
+    }
+    return &pb.CopyReply{}, nil
 }
