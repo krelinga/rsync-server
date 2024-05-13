@@ -4,6 +4,7 @@ import (
     "bytes"
     "context"
     "fmt"
+    "log"
     "os"
     "os/exec"
     "path/filepath"
@@ -45,7 +46,15 @@ func (tc testContainer) Build(t *testing.T) {
 
 func (tc testContainer) Stop(t *testing.T) {
     t.Helper()
-    cmd := exec.Command("docker", "container", "stop", tc.containerId)
+    // Get a copy of all the logs before shutting down.
+    cmd := exec.Command("docker", "container", "logs", tc.containerId)
+    cmd.Stdout = log.Default().Writer()
+    cmd.Stderr = log.Default().Writer()
+    if err := cmd.Run(); err != nil {
+        t.Fatalf("Could not get container logs before stopping.")
+    }
+
+    cmd = exec.Command("docker", "container", "stop", tc.containerId)
     cmdOutput := captureOutput(cmd)
     if err := cmd.Run(); err != nil {
         t.Fatalf("could not stop & delete docker container: %s %s", err, cmdOutput)
