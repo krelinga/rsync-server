@@ -18,6 +18,9 @@ func (rs *RsyncServer) Copy(ctx context.Context, req *pb.CopyRequest) (*pb.CopyR
 }
 
 func MainOrError() error {
+    if err := logRsyncVersion(); err != nil {
+        return err
+    }
     lis, err := net.Listen("tcp", ":25003")
     if err != nil {
         return err
