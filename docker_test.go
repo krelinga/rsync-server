@@ -8,6 +8,7 @@ import (
     "os"
     "os/exec"
     "path/filepath"
+    "strings"
     "testing"
 
     "github.com/google/go-cmp/cmp"
@@ -134,14 +135,17 @@ func TestDocker(t *testing.T) {
                 t.Fatal(err)
             }
         }
+        const FileSizeMult = 10000
         setContents := func(p, s string) {
             f, err := os.Create(p)
             if err != nil {
                 t.Fatal(err)
             }
-            _, err = fmt.Fprintf(f, "%s", s)
-            if err != nil {
-                t.Fatal(err)
+            for i:= 0; i < FileSizeMult; i++ {
+                _, err = fmt.Fprintf(f, "%s", s)
+                if err != nil {
+                    t.Fatal(err)
+                }
             }
             f.Close()
         }
@@ -156,6 +160,7 @@ func TestDocker(t *testing.T) {
         req := &pb.CopyRequest{
             InPath: "/testdata/in",
             OutSuperPath: "/testdata/out",
+            BwLimitKbps: 1,
         }
         _, err = client.Copy(context.Background(), req)
         if err != nil {
@@ -169,9 +174,14 @@ func TestDocker(t *testing.T) {
                 t.Error(err)
                 return
             }
+            sb := &strings.Builder{}
+            for i := 0; i < FileSizeMult; i++ {
+                fmt.Fprintf(sb, "%s", c)
+            }
             dataStr := string(data)
-            if !cmp.Equal(c, dataStr) {
-                t.Error(cmp.Diff(c, dataStr))
+            expDataStr := sb.String()
+            if !cmp.Equal(expDataStr, dataStr) {
+                t.Error(cmp.Diff(expDataStr, dataStr))
             }
         }
         ok("in/a.txt", "a.txt")

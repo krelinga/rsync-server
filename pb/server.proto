@@ -5,6 +5,10 @@ option go_package = "github.com/krelinga/rsync-server/pb";
 message CopyRequest {
     string in_path = 1;
     string out_super_path = 2;
+
+    // If set to a non-zero value, the bandwidth used by rsync will be capped
+    // at this many kilobytes per-second.
+    uint64 bw_limit_kbps = 3;
 }
 
 message CopyReply {

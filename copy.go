@@ -17,9 +17,11 @@ func copyImpl(ctx context.Context, req *pb.CopyRequest) (*pb.CopyReply, error) {
         "-a",
         "--info=progress2",
         "-r",
-        req.InPath,
-        req.OutSuperPath,
     }
+    if req.BwLimitKbps > 0 {
+        args = append(args, fmt.Sprintf("--bwlimit=%d", req.BwLimitKbps))
+    }
+    args = append(args, req.InPath, req.OutSuperPath)
     cmd := exec.CommandContext(ctx, "rsync", args...)
     pipe, err := cmd.StdoutPipe()
     if err != nil {
